@@ -25,7 +25,8 @@ def dodaj_zadanie(
         json=data,
         timeout=5,
     )
-    print(response.status_code, response.text)
+    response.raise_for_status()
+    return response.json()
 
 def zaktualizuj_zadanie(
         task_id: int,
@@ -36,7 +37,8 @@ def zaktualizuj_zadanie(
         json=data,
         timeout=5,
     )
-    print(response.status_code, response.text)
+    response.raise_for_status()
+    return response.json()
 
 def usun_zadanie(
         task_id: int
@@ -45,4 +47,19 @@ def usun_zadanie(
         f"http://{ip}:{port}/tasks/{task_id}",
         timeout=5,
     )
-    print(response.status_code, response.text)
+    response.raise_for_status()
+
+
+
+if __name__ == "__main__":
+    i = int(input("1 - dodaj, 2 - odczytaj, 3 - usun: "))
+    if (i == 1):
+        tytul = input("tytul: ")
+        opis = input("opis: ")
+        print(dodaj_zadanie({"tytul": tytul, "opis": opis}))
+    elif (i == 2):
+        task_id = int(input("id: "))
+        print(odczytaj_zadanie(task_id))
+    elif (i == 3):
+        task_id = int(input("id: "))
+        print(usun_zadanie(task_id))
