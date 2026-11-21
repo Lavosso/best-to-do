@@ -23,4 +23,4 @@ Otwórz [panel misji](http://localhost:8000). Dodaj misję i zaznacz pole przy j
 - `src/frontend/progress.js` określa nagrody za priorytety i próg nowego poziomu. Panel oblicza XP na podstawie aktualnie ukończonych zadań. Cofnięcie ukończenia odejmuje nagrodę.
 - `src/frontend/api.js` odpowiada za odczyt i zapis zadań. `app.js` łączy dane z widokiem, a `style.css` definiuje wygląd panelu.
 
-Obecny backend przechowuje zadania w pamięci procesu. Po restarcie serwera lista zadań i wynik XP zaczynają się od zera.
+Backend wczytuje zadania z pliku `zadania_robocze.json` w głównym katalogu projektu. Jeśli pliku jeszcze nie ma, panel startuje z pustą listą, a plik pojawia się po pierwszej zapisanej zmianie. Po restarcie panel odtwarza XP na podstawie wczytanych zadań. Uruchamiaj aplikację z jednym procesem serwera.
