@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101017">
+  <title>QuestLog · Dziennik misji</title>
+  <link rel="icon" href="/ui/assets/brand.svg">
+  <link rel="stylesheet" href="/ui/style.css">
+  <script type="module" src="/ui/app.js"></script>
+</head>
+<body>
+  <header class="topbar"><div class="wrap bar-inner">
+    <div class="brand"><img src="/ui/assets/brand.svg" alt="">Quest<span>Log</span></div>
+    <div class="api-tools"><span class="connection" id="connection" role="status">Łączenie z API…</span>
+      <button class="refresh" id="refresh" type="button" aria-label="Odśwież dane" title="Odśwież dane" data-icon="refresh"></button></div>
+  </div></header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="level"><span aria-hidden="true">◆</span> Poziom <b id="level">—</b></div>
+      <h1 id="page-title">Dziennik misji</h1>
+      <p>Wykonuj zadania i zdobywaj doświadczenie.</p>
+      <div class="experience">
+        <div class="experience-label"><span>Postęp poziomu</span><strong id="level-xp">— XP</strong></div>
+        <progress id="level-bar" value="0" max="100" aria-label="Postęp poziomu"></progress>
+      </div>
+    </section>
+
+    <div class="dashboard">
+      <section class="board" aria-labelledby="board-title">
+        <div class="board-header"><h2 id="board-title">Tablica misji</h2>
+          <button id="add" class="primary" type="button"><span aria-hidden="true">+</span> Nowa misja</button>
+        </div>
+        <div class="filters" role="group" aria-label="Filtruj misje">
+          <button data-filter="all" aria-pressed="true">Wszystkie</button>
+          <button data-filter="active" aria-pressed="false">Aktywne</button>
+          <button data-filter="done" aria-pressed="false">Ukończone</button>
+        </div>
+        <div id="notice" role="alert" hidden></div>
+        <ul id="tasks" aria-label="Misje"></ul>
+        <div class="empty" id="empty" role="status">
+          <img src="/ui/assets/chest.png" alt="" width="104" height="72">
+          <h3 id="empty-title">Pobieranie misji…</h3><p id="empty-detail"></p>
+        </div>
+      </section>
+
+      <aside>
+        <section class="side-card"><h2><span class="icon" data-icon="chart"></span>Statystyki gracza</h2>
+          <dl class="stats">
+            <div><dt><span class="tile gold" data-icon="bolt"></span>Łącznie XP</dt><dd id="xp">—</dd></div>
+            <div><dt><span class="tile mint" data-icon="check"></span>Ukończone misje</dt><dd id="done">—</dd></div>
+            <div><dt><span class="tile purple" data-icon="flag"></span>Aktywne misje</dt><dd id="active">—</dd></div>
+          </dl>
+        </section>
+        <section class="side-card rewards"><h2><span class="icon" data-icon="gem"></span>Nagrody za misje</h2>
+          <p>XP za ukończenie misji według priorytetu.</p>
+          <dl id="rewards"></dl>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="editor" aria-labelledby="form-title">
+    <form id="task-form">
+      <div class="dialog-head"><h2 id="form-title">Nowa misja</h2><button type="button" class="close" aria-label="Zamknij" id="close">×</button></div>
+      <label>Nazwa misji<input name="tytul" required autofocus></label>
+      <label>Opis <small>(opcjonalnie)</small><textarea name="opis" rows="3"></textarea></label>
+      <div class="fields"><label>Priorytet<select name="priorytet"></select></label>
+      <label>Termin <small>(opcjonalnie)</small><input type="date" name="termin"></label></div>
+      <p id="form-error" role="alert" hidden></p>
+      <div class="actions"><button type="button" class="secondary" id="cancel">Anuluj</button><button class="primary" type="submit">Dodaj misję</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

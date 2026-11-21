@@ -1,11 +1,22 @@
 from datetime import date
+from pathlib import Path
 
 from backend.zadania import ListaZadan, Zadanie
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, StrictBool
 
 app = FastAPI(title="Task Control API")
 listaAPI = ListaZadan()
+frontend_dir = Path(__file__).resolve().parents[1] / "frontend"
+app.mount("/ui", StaticFiles(directory=frontend_dir), name="frontend")
+
+
+@app.get("/", include_in_schema=False)
+def panel_gracza():
+    return FileResponse(frontend_dir / "index.html")
+
 
 class NoweZadanie(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -16,6 +27,10 @@ class NoweZadanie(BaseModel):
     priorytet: str = "sredni"
     wykonane: StrictBool = False
     tagi: list[str] = Field(default_factory=list)
+
+
+class ZmianyZadania(NoweZadanie):
+    tytul: str | None = None
 
 
 def sprawdz_czy_zadanie_istnieje(id_zadanie: int) -> Zadanie:
@@ -44,7 +59,7 @@ def nowe_zadanko(dane: NoweZadanie):
         raise HTTPException(422, str(exc)) from exc
 
 @app.patch("/tasks/{id_zadanie}", response_model=Zadanie)
-def edytuj_zadanko(id_zadanie: int, do_zmiany: dict):
+def edytuj_zadanko(id_zadanie: int, do_zmiany: ZmianyZadania):
     zadanie = sprawdz_czy_zadanie_istnieje(id_zadanie)
     try:
         listaAPI.edytuj_zadanie(id_zadanie, **do_zmiany.model_dump(exclude_unset=True))
