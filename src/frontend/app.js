@@ -22,15 +22,8 @@ function element(tag, className = "", text = "") {
   return node;
 }
 
-function addReward(list, label, xp, className) {
-  const row = document.createElement("div");
-  row.append(element("dt", className, label), element("dd", "", `+${xp} XP`));
-  $(list).append(row);
-}
-
-for (const [value, { label, xp }] of Object.entries(priorities)) {
+for (const [value, { label }] of Object.entries(priorities)) {
   form.elements.priorytet.add(new Option(label, value, value === "sredni", value === "sredni"));
-  addReward("rewards", label, xp, `priority ${value}`);
 }
 
 for (const [type, { label, xp }] of Object.entries(drinks)) {
@@ -41,7 +34,6 @@ for (const [type, { label, xp }] of Object.entries(drinks)) {
   button.setAttribute("aria-label", `Dodaj napój: ${label}, +${xp} XP`);
   button.addEventListener("click", () => drink(type, button));
   $("drinks").append(button);
-  addReward("drink-rewards", label, xp);
 }
 $("caffeine-bar").style.setProperty("--segments", caffeineMeter.maxMg / caffeineMeter.stepMg);
 $("caffeine-bar").setAttribute("aria-valuemax", caffeineMeter.maxMg);
@@ -92,10 +84,6 @@ function render() {
   $("level-xp").textContent = `${stats.levelXp} / ${xpPerLevel} XP`;
   $("level-bar").max = xpPerLevel;
   $("level-bar").value = stats.levelXp;
-  $("xp").textContent = stats.xp;
-  $("done").textContent = stats.completed;
-  $("active").textContent = stats.active;
-  $("caffeine-total").textContent = stats.caffeineMg.toLocaleString("pl-PL");
   renderCaffeine();
 
   const visible = tasks.filter((task) => filter === "all" || task.wykonane === (filter === "done"));

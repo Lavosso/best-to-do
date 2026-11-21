@@ -16,7 +16,7 @@
   background: #e6e6d6;
 }
 * { box-sizing: border-box; }
-body, h1, h2, h3, p, dl, dd, ul { margin: 0; }
+body, h1, h2, h3, p, ul { margin: 0; }
 [hidden] { display: none !important; }
 button, input, select, textarea { font: inherit; color: inherit; border-radius: 0; }
 button {
@@ -34,7 +34,7 @@ button:disabled, input:disabled { opacity: .65; cursor: wait; }
 :focus-visible { outline: 3px solid #3578be; outline-offset: 2px; }
 .wrap { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
 .topbar { background: #253225; color: var(--paper); border-bottom: 4px solid #7ea357; }
-.bar-inner, .api-tools, .brand, .board-header, .dialog-head, .actions, .experience-label, dl > div {
+.bar-inner, .api-tools, .brand, .board-header, .dialog-head, .actions, .experience-label {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
 .bar-inner { min-height: 58px; }
@@ -60,7 +60,7 @@ h1 { font: clamp(1.9rem, 4.5vw, 3rem)/1.12 var(--pixel); margin: 8px 0 4px; text
 .hero > p { color: #e9e1e5; }
 .meters { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; }
 .experience { width: min(232px, 100%); --fill: #b2da75; }
-.experience-label, .caffeine-note, dd, .task-xp { font: .8125rem/1.5 monospace; }
+.experience-label, .caffeine-note, .task-xp { font: .8125rem/1.5 monospace; }
 .experience-label strong { color: var(--fill); }
 progress, .caffeine-bar { display: block; width: 100%; height: 10px; margin-top: 3px; border: 0; background: #4b4453; }
 progress { appearance: none; }
@@ -76,14 +76,13 @@ progress::-moz-progress-bar { background: var(--fill); }
 .caffeine:not([data-level="normal"]) .caffeine-note { color: var(--fill); }
 .caffeine[data-level="very-high"] #caffeine-fill { animation: pulse 1.6s steps(2) infinite; }
 @keyframes pulse { 50% { opacity: .6; } }
-.dashboard, .main-column, aside, form { display: grid; gap: 14px; }
-.dashboard { grid-template-columns: minmax(0, 2.15fr) minmax(270px, 1fr); align-items: start; margin-top: 16px; }
+main.wrap, form { display: grid; gap: 14px; }
 .panel, dialog { background: var(--paper); padding: 18px; }
 h2 { font: 1.125rem/1.3 var(--pixel); }
 .board-header h2 { font-size: 1.5rem; }
 .caffeine-box, .drinks, .filters, .metadata { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .caffeine-box { justify-content: space-between; gap: 12px; background: #efe7cf; }
-.caffeine-feedback, .rewards p, .empty p, .task-body p { color: var(--muted); font-size: .875rem; margin-top: 4px; }
+.caffeine-feedback, .empty p, .task-body p { color: var(--muted); font-size: .875rem; margin-top: 4px; }
 #caffeine-undo { padding: 1px 7px; margin-left: 4px; }
 .drink { position: relative; }
 .xp-pop { position: absolute; bottom: 100%; left: 0; width: 100%; color: #473114; background: #ffdc91; font: bold .75rem monospace; pointer-events: none; animation: pop .9s steps(4) forwards; }
@@ -96,20 +95,16 @@ h2 { font: 1.125rem/1.3 var(--pixel); }
 h3 { font-size: 1rem; }
 #tasks { list-style: none; padding: 0; }
 #tasks li { display: flex; align-items: start; gap: 10px; padding: 14px 0; }
-#tasks li + li, dl > div + div { border-top: 1px solid var(--line); }
+#tasks li + li { border-top: 1px solid var(--line); }
 #tasks input { flex: none; width: 19px; height: 19px; margin: 2px 0; accent-color: #527133; }
 .task-body { min-width: 0; flex: 1; overflow-wrap: anywhere; }
 .task-body p { white-space: pre-wrap; }
 .completed h3 { color: var(--muted); text-decoration: line-through; }
-.task-xp, .rewards dd { color: #755019; font-weight: bold; white-space: nowrap; }
+.task-xp { color: #755019; font-weight: bold; white-space: nowrap; }
 .metadata { margin-top: 6px; gap: 4px 12px; font-size: .8125rem; color: var(--muted); }
 .niski::before { background: #568441; }
 .sredni::before { background: #bd8526; }
 .wysoki::before { background: #b6523e; }
-dl { margin-top: 10px; }
-dl > div { padding-block: 5px; font-size: .875rem; }
-dl > div:last-child { padding-bottom: 0; }
-dd { font-weight: bold; }
 dialog { width: min(440px, calc(100% - 32px)); color: var(--ink); }
 dialog::backdrop { background: #1a201acc; }
 form label { min-width: 0; font-size: .875rem; font-weight: 650; }
@@ -121,7 +116,6 @@ textarea { resize: vertical; }
 #notice, #form-error, .caffeine-feedback.error { color: #9c3028; }
 #notice { margin-top: 10px; }
 @media (max-width: 760px) {
-  .dashboard { grid-template-columns: 1fr; }
   .hero { background-image: linear-gradient(90deg, #10092efa, #10092e66), url("assets/zachod.webp"); }
 }
 @media (max-width: 520px) {

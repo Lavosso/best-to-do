@@ -34,54 +34,31 @@
       </div>
     </section>
 
-    <div class="dashboard">
-      <div class="main-column">
-        <section class="panel caffeine-box" aria-labelledby="caffeine-title">
-          <div>
-            <h2 id="caffeine-title">Kofeina</h2>
-            <p class="caffeine-feedback" id="caffeine-feedback-line"><span id="caffeine-feedback" role="status">Kliknij wypity napój</span>
-              <button type="button" id="caffeine-undo" hidden>Cofnij</button></p>
-          </div>
-          <div class="drinks" id="drinks" role="group" aria-label="Dodaj wypity napój"></div>
-        </section>
-
-        <section class="panel" aria-labelledby="board-title">
-          <div class="board-header"><h2 id="board-title">Tablica misji</h2>
-            <button id="add" class="primary" type="button"><span aria-hidden="true">+</span> Nowa misja</button>
-          </div>
-          <div class="filters" role="group" aria-label="Filtruj misje">
-            <button data-filter="all" aria-pressed="true">Wszystkie</button>
-            <button data-filter="active" aria-pressed="false">Aktywne</button>
-            <button data-filter="done" aria-pressed="false">Ukończone</button>
-          </div>
-          <div id="notice" role="alert" hidden></div>
-          <ul id="tasks" aria-label="Misje"></ul>
-          <div class="empty" id="empty" role="status">
-            <img src="/ui/assets/chest.png" alt="" width="104" height="72">
-            <h3 id="empty-title">Pobieranie misji…</h3><p id="empty-detail"></p>
-          </div>
-        </section>
+    <section class="panel caffeine-box" aria-labelledby="caffeine-title">
+      <div>
+        <h2 id="caffeine-title">Kofeina</h2>
+        <p class="caffeine-feedback" id="caffeine-feedback-line"><span id="caffeine-feedback" role="status">Kliknij wypity napój</span>
+          <button type="button" id="caffeine-undo" hidden>Cofnij</button></p>
       </div>
+      <div class="drinks" id="drinks" role="group" aria-label="Dodaj wypity napój"></div>
+    </section>
 
-      <aside>
-        <section class="panel"><h2>Statystyki gracza</h2>
-          <dl>
-            <div><dt>Łącznie XP</dt><dd id="xp">—</dd></div>
-            <div><dt>Ukończone misje</dt><dd id="done">—</dd></div>
-            <div><dt>Aktywne misje</dt><dd id="active">—</dd></div>
-            <div><dt>Wypite mg kofeiny</dt><dd id="caffeine-total">—</dd></div>
-          </dl>
-        </section>
-        <section class="panel rewards"><h2>Nagrody za misje</h2>
-          <p>XP za ukończenie misji według priorytetu.</p>
-          <dl id="rewards"></dl>
-        </section>
-        <section class="panel rewards"><h2>Boost Kofeinowy</h2>
-          <p>XP za każdy wypity napój.</p>
-          <dl id="drink-rewards"></dl>
-        </section>
-      </aside>
-    </div>
+    <section class="panel" aria-labelledby="board-title">
+      <div class="board-header"><h2 id="board-title">Tablica misji</h2>
+        <button id="add" class="primary" type="button"><span aria-hidden="true">+</span> Nowa misja</button>
+      </div>
+      <div class="filters" role="group" aria-label="Filtruj misje">
+        <button data-filter="all" aria-pressed="true">Wszystkie</button>
+        <button data-filter="active" aria-pressed="false">Aktywne</button>
+        <button data-filter="done" aria-pressed="false">Ukończone</button>
+      </div>
+      <div id="notice" role="alert" hidden></div>
+      <ul id="tasks" aria-label="Misje"></ul>
+      <div class="empty" id="empty" role="status">
+        <img src="/ui/assets/chest.png" alt="" width="104" height="72">
+        <h3 id="empty-title">Pobieranie misji…</h3><p id="empty-detail"></p>
+      </div>
+    </section>
   </main>
 
   <dialog id="editor" aria-labelledby="form-title">
