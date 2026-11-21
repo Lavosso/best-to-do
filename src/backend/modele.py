@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date
 
 @dataclass
 class Zadanie:
@@ -10,11 +10,4 @@ class Zadanie:
     priorytet: str = "sredni"
     wykonane: bool = False
     tagi: list[str] = field(default_factory = list)
-
-
-@dataclass
-class Kofeina:
-    id: int
-    rodzaj: str
-    mg: int
-    czas: datetime
+    mnoznik_xp: float = 1

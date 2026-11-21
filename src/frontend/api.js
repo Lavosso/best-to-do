@@ -1,8 +1,10 @@
-async function request(url, options = {}) {
-  const response = await fetch(url, {
-    ...options,
-    signal: AbortSignal.timeout(10000),
-  });
+async function request(url, method = "GET", data) {
+  const options = { method, signal: AbortSignal.timeout(10000) };
+  if (data !== undefined) {
+    options.headers = { "Content-Type": "application/json" };
+    options.body = JSON.stringify(data);
+  }
+  const response = await fetch(url, options);
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new Error(typeof body.detail === "string" ? body.detail : `Błąd API (${response.status})`);
@@ -10,18 +12,6 @@ async function request(url, options = {}) {
   return response.status === 204 ? null : response.json();
 }
 
-function save(url, method, data) {
-  return request(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-}
-
 export const getTasks = () => request("/tasks");
-export const createTask = (data) => save("/tasks", "POST", data);
-export const setCompleted = (id, wykonane) => save(`/tasks/${id}`, "PATCH", { wykonane });
-
-export const getCaffeine = () => request("/caffeine");
-export const addCaffeine = (rodzaj) => save("/caffeine", "POST", { rodzaj });
-export const removeCaffeine = (id) => request(`/caffeine/${id}`, { method: "DELETE" });
+export const createTask = (data) => request("/tasks", "POST", data);
+export const setCompleted = (id, wykonane, mnoznik_xp) => request(`/tasks/${id}`, "PATCH", { wykonane, mnoznik_xp });
