@@ -37,10 +37,12 @@
     <section class="panel caffeine-box" aria-labelledby="caffeine-title">
       <div>
         <h2 id="caffeine-title">Kofeina</h2>
-        <p class="caffeine-feedback" id="caffeine-feedback-line"><span id="caffeine-feedback" role="status">Kliknij wypity napój</span>
-          <button type="button" id="caffeine-undo" hidden>Cofnij</button></p>
+        <p class="caffeine-feedback" role="status">Mnożnik XP za misję <strong id="multiplier">—</strong> (maks. ×4)</p>
       </div>
-      <div class="drinks" id="drinks" role="group" aria-label="Dodaj wypity napój"></div>
+      <form id="caffeine-form" autocomplete="off">
+        <label>Ilość kofeiny (mg)<input name="mg" type="number" min="1" max="9007199254740991" step="1" required></label>
+        <button type="submit" class="primary">wypiłem!</button>
+      </form>
     </section>
 
     <section class="panel" aria-labelledby="board-title">

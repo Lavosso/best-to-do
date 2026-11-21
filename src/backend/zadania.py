@@ -22,6 +22,10 @@ def sprawdz_zadanie(zadanie: Zadanie) -> None:
     prawidlowy_priotytet(zadanie.priorytet)
     prawidlowy_status(zadanie.wykonane)
     prawidlowe_tagi(zadanie.tagi)
+    if type(zadanie.mnoznik_xp) not in (int, float) or not 0 <= zadanie.mnoznik_xp <= 4:
+        raise ValueError("Mnożnik XP musi być liczbą od 0 do 4")
+    if not zadanie.wykonane and zadanie.mnoznik_xp != 1:
+        raise ValueError("Tylko ukończone zadanie może mieć zapisany mnożnik XP")
 
 
 class ListaZadan:
@@ -65,6 +69,7 @@ class ListaZadan:
         priorytet: str = "sredni",
         wykonane: bool = False,
         tagi: list[str] | None = None,
+        mnoznik_xp: float = 1,
     ) -> Zadanie:
         if tagi is None:
             tagi = []
@@ -82,6 +87,7 @@ class ListaZadan:
             priorytet=priorytet,
             wykonane=wykonane,
             tagi=tagi,
+            mnoznik_xp=mnoznik_xp if wykonane else 1,
         )
         sprawdz_zadanie(zadanie)
         zadanie.tytul = prawidlowy_tekst(zadanie.tytul)
@@ -89,7 +95,7 @@ class ListaZadan:
         self.zadania.append(zadanie)
         return zadanie
 
-    def edytuj_zadanie(self, zadanie_id: int, **zmiany) -> None:
+    def edytuj_zadanie(self, zadanie_id: int, *, mnoznik_xp: float = 1, **zmiany) -> None:
         dozwolone_pola = {
             "tytul",
             "opis",
@@ -104,6 +110,8 @@ class ListaZadan:
                 raise ValueError(f"Nie można edytować pola: {pole}")
 
         zadanie = self.znajdz_zadanie(zadanie_id)
+        if "wykonane" in zmiany and zmiany["wykonane"] != zadanie.wykonane:
+            zmiany["mnoznik_xp"] = mnoznik_xp if zmiany["wykonane"] else 1
         poprawka = replace(zadanie, **zmiany)
         sprawdz_zadanie(poprawka)
 

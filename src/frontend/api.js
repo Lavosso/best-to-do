@@ -14,8 +14,4 @@ async function request(url, method = "GET", data) {
 
 export const getTasks = () => request("/tasks");
 export const createTask = (data) => request("/tasks", "POST", data);
-export const setCompleted = (id, wykonane) => request(`/tasks/${id}`, "PATCH", { wykonane });
-
-export const getCaffeine = () => request("/caffeine");
-export const addCaffeine = (rodzaj) => request("/caffeine", "POST", { rodzaj });
-export const removeCaffeine = (id) => request(`/caffeine/${id}`, "DELETE");
+export const setCompleted = (id, wykonane, mnoznik_xp) => request(`/tasks/${id}`, "PATCH", { wykonane, mnoznik_xp });
