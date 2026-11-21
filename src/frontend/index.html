@@ -13,7 +13,7 @@
   <header class="topbar"><div class="wrap bar-inner">
     <div class="brand"><img src="/ui/assets/brand.svg" alt="">Quest<span>Log</span></div>
     <div class="api-tools"><span class="connection" id="connection" role="status">Łączenie z API…</span>
-      <button class="refresh" id="refresh" type="button" aria-label="Odśwież dane" title="Odśwież dane" data-icon="refresh"></button></div>
+      <button class="refresh" id="refresh" type="button" aria-label="Odśwież dane" title="Odśwież dane">Odśwież</button></div>
   </div></header>
 
   <main class="wrap">
@@ -36,7 +36,7 @@
       <div class="main-column">
         <section class="caffeine-box" aria-labelledby="caffeine-title">
           <div class="caffeine-info">
-            <h2 id="caffeine-title"><span class="icon" data-icon="cup"></span>Kofeina</h2>
+            <h2 id="caffeine-title">Kofeina</h2>
             <p class="caffeine-feedback" id="caffeine-feedback-line"><span id="caffeine-feedback" role="status">Kliknij wypity napój</span>
               <button type="button" class="undo" id="caffeine-undo" hidden>Cofnij</button></p>
           </div>
@@ -62,19 +62,19 @@
       </div>
 
       <aside>
-        <section class="side-card"><h2><span class="icon" data-icon="chart"></span>Statystyki gracza</h2>
+        <section class="side-card"><h2>Statystyki gracza</h2>
           <dl class="stats">
-            <div><dt><span class="tile gold" data-icon="bolt"></span>Łącznie XP</dt><dd id="xp">—</dd></div>
-            <div><dt><span class="tile mint" data-icon="check"></span>Ukończone misje</dt><dd id="done">—</dd></div>
-            <div><dt><span class="tile purple" data-icon="flag"></span>Aktywne misje</dt><dd id="active">—</dd></div>
-            <div><dt><span class="tile roast" data-icon="cup"></span>Wypite mg kofeiny</dt><dd id="caffeine-total">—</dd></div>
+            <div><dt>Łącznie XP</dt><dd id="xp">—</dd></div>
+            <div><dt>Ukończone misje</dt><dd id="done">—</dd></div>
+            <div><dt>Aktywne misje</dt><dd id="active">—</dd></div>
+            <div><dt>Wypite mg kofeiny</dt><dd id="caffeine-total">—</dd></div>
           </dl>
         </section>
-        <section class="side-card rewards"><h2><span class="icon" data-icon="gem"></span>Nagrody za misje</h2>
+        <section class="side-card rewards"><h2>Nagrody za misje</h2>
           <p>XP za ukończenie misji według priorytetu.</p>
           <dl id="rewards"></dl>
         </section>
-        <section class="side-card rewards"><h2><span class="icon" data-icon="cup"></span>Boost Kofeinowy</h2>
+        <section class="side-card rewards"><h2>Boost Kofeinowy</h2>
           <p>XP za każdy wypity napój.</p>
           <dl id="drink-rewards"></dl>
         </section>

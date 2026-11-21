@@ -15,51 +15,33 @@ let feedbackTimer;
 let filter = "all";
 let busy = false;
 
-const iconPaths = {
-  chart: "M4 19h16 M6 15v-4 M12 15V5 M18 15V8",
-  bolt: "m13 2-9 12h7l-1 8 10-13h-8z",
-  check: "m5 12 4 4 10-10",
-  cup: "M17 8h1a4 4 0 0 1 0 8h-1 M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z M6 2v3 M10 2v3 M14 2v3",
-  flag: "M5 21V4c5-4 9 4 15 0v10c-6 4-10-4-15 0",
-  gem: "m3 9 4-5h10l4 5-9 12z M3 9h18 M9 9l3 12 3-12",
-  refresh: "M20 7v5h-5 M4 17v-5h5 M6 8a7 7 0 0 1 12-2l2 4 M4 14l2 4a7 7 0 0 0 12-2",
-};
-for (const node of document.querySelectorAll("[data-icon]")) {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("aria-hidden", "true");
-  const path = document.createElementNS(svg.namespaceURI, "path");
-  path.setAttribute("d", iconPaths[node.dataset.icon]);
-  svg.append(path);
-  node.append(svg);
-}
-
-function element(tag, className, text) {
+function element(tag, className = "", text = "") {
   const node = document.createElement(tag);
   if (className) node.className = className;
   node.textContent = text;
   return node;
 }
 
+function addReward(list, label, xp, className) {
+  const row = document.createElement("div");
+  row.append(element("dt", className, label), element("dd", "", `+${xp} XP`));
+  $(list).append(row);
+}
+
 for (const [value, { label, xp }] of Object.entries(priorities)) {
   form.elements.priorytet.add(new Option(label, value, value === "sredni", value === "sredni"));
-  const row = document.createElement("div");
-  row.append(element("dt", `priority ${value}`, label), element("dd", "", `+${xp} XP`));
-  $("rewards").append(row);
+  addReward("rewards", label, xp, `priority ${value}`);
 }
 
 for (const [type, { label, xp }] of Object.entries(drinks)) {
-  const button = document.createElement("button");
+  const button = element("button", "drink", label);
   button.type = "button";
-  button.className = "drink";
   button.dataset.drink = type;
   button.title = `${label} · +${xp} XP`;
   button.setAttribute("aria-label", `Dodaj napój: ${label}, +${xp} XP`);
   button.addEventListener("click", () => drink(type, button));
   $("drinks").append(button);
-  const row = document.createElement("div");
-  row.append(element("dt", "drink-reward", label), element("dd", "", `+${xp} XP`));
-  $("drink-rewards").append(row);
+  addReward("drink-rewards", label, xp);
 }
 $("caffeine-bar").style.setProperty("--segments", caffeineMeter.maxMg / caffeineMeter.stepMg);
 $("caffeine-bar").setAttribute("aria-valuemax", caffeineMeter.maxMg);
@@ -74,10 +56,10 @@ function renderTask(task) {
   toggle.setAttribute("aria-label", `Ukończono: ${task.tytul}`);
   toggle.addEventListener("change", () => toggleTask(task));
   item.classList.toggle("completed", task.wykonane);
-  const body = element("div", "task-body", "");
+  const body = element("div", "task-body");
   body.append(element("h3", "", task.tytul));
   if (task.opis) body.append(element("p", "", task.opis));
-  const meta = element("div", "metadata", "");
+  const meta = element("div", "metadata");
   const priority = priorities[task.priorytet];
   meta.append(element("span", `priority ${task.priorytet}`, priority.label));
   if (task.termin) {
@@ -130,9 +112,13 @@ function render() {
 function chooseFilter(value) {
   filter = value;
   for (const button of filters) button.setAttribute("aria-pressed", String(button.dataset.filter === value));
-  render();
 }
-for (const button of filters) button.addEventListener("click", () => chooseFilter(button.dataset.filter));
+for (const button of filters) {
+  button.addEventListener("click", () => {
+    chooseFilter(button.dataset.filter);
+    render();
+  });
+}
 
 function setBusy(value) {
   busy = value;
@@ -141,55 +127,52 @@ function setBusy(value) {
   }
 }
 
-function connection(online) {
-  $("connection").dataset.online = String(online);
-  $("connection").textContent = online ? "API online" : "API offline";
+function connection(text) {
+  $("connection").dataset.online = String(text === "API online");
+  $("connection").textContent = text;
 }
 
 function showError(node, error) {
   const offline = ["TypeError", "TimeoutError"].includes(error.name);
-  if (offline) {
-    connection(false);
-  } else {
-    $("connection").dataset.online = "false";
-    $("connection").textContent = "Błąd API";
-  }
+  connection(offline ? "API offline" : "Błąd API");
   node.textContent = offline ? "Brak połączenia z API. Spróbuj ponownie." : error.message;
   node.hidden = false;
 }
 
-async function load() {
+async function run(action, onError = (error) => showError($("notice"), error)) {
   setBusy(true);
+  try {
+    await action();
+  } catch (error) {
+    onError(error);
+  } finally {
+    setBusy(false);
+    render();
+  }
+}
+
+async function fetchJournal() {
   $("notice").hidden = true;
   try {
     [tasks, intake] = await Promise.all([getTasks(), getCaffeine()]);
-    connection(true);
-    render();
+    connection("API online");
   } catch (error) {
-    showError($("notice"), error);
     if (tasks === null) {
       $("empty-title").textContent = "Nie udało się pobrać misji";
       $("empty-detail").textContent = "Użyj przycisku odświeżania obok statusu API.";
     }
-  } finally {
-    setBusy(false);
+    showError($("notice"), error);
   }
 }
 
 async function toggleTask(task) {
-  setBusy(true);
   $("notice").hidden = true;
-  try {
+  await run(async () => {
     const updated = await setCompleted(task.id, !task.wykonane);
     tasks = tasks.map((entry) => entry.id === task.id ? updated : entry);
-    connection(true);
-  } catch (error) {
-    showError($("notice"), error);
-  } finally {
-    setBusy(false);
-    render();
-    (document.querySelector(`input[data-id="${task.id}"]`) ?? document.querySelector('[data-filter][aria-pressed="true"]')).focus();
-  }
+    connection("API online");
+  });
+  (document.querySelector(`input[data-id="${task.id}"]`) ?? document.querySelector('[data-filter][aria-pressed="true"]')).focus();
 }
 
 function caffeineFeedback(text, { undo = false, error = false, resetAfter = 0 } = {}) {
@@ -223,52 +206,36 @@ function popXp(button, xp) {
 }
 
 async function drink(type, button) {
-  if (busy) return;
-  setBusy(true);
-  try {
+  await run(async () => {
     const entry = await addCaffeine(type);
-    connection(true);
+    connection("API online");
     lastDrink = entry;
     const { label, xp } = drinks[type];
     caffeineFeedback(`${label}: +${entry.mg} mg, +${xp} XP`, { undo: true, resetAfter: 8000 });
     popXp(button, xp);
-    if (intake === null) {
-      await load();
-    } else {
-      intake = [...intake, entry];
-    }
-  } catch (error) {
-    caffeineError(error);
-  } finally {
-    setBusy(false);
-    render();
-    button.focus();
-  }
+    if (intake) intake.push(entry);
+    else await fetchJournal();
+  }, caffeineError);
+  button.focus();
 }
 
 $("caffeine-undo").addEventListener("click", async () => {
-  if (busy || !lastDrink) return;
   const entry = lastDrink;
-  setBusy(true);
-  try {
+  if (!entry) return;
+  await run(async () => {
     await removeCaffeine(entry.id);
-    intake = intake?.filter((item) => item.id !== entry.id) ?? null;
-    connection(true);
+    if (intake) intake = intake.filter((item) => item.id !== entry.id);
+    connection("API online");
     lastDrink = null;
     caffeineFeedback(`Cofnięto: ${drinks[entry.rodzaj].label}`, { resetAfter: 4000 });
-  } catch (error) {
-    caffeineError(error);
-  } finally {
-    setBusy(false);
-    render();
-    document.querySelector(`[data-drink="${entry.rodzaj}"]`).focus();
-  }
+  }, caffeineError);
+  document.querySelector(`[data-drink="${entry.rodzaj}"]`).focus();
 });
 
 setInterval(renderCaffeine, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) renderCaffeine(); });
 
-$("refresh").addEventListener("click", load);
+$("refresh").addEventListener("click", () => run(fetchJournal));
 $("add").addEventListener("click", () => {
   $("form-error").hidden = true;
   dialog.showModal();
@@ -288,26 +255,21 @@ form.addEventListener("submit", async (event) => {
     return;
   }
   data.termin ||= null;
-  setBusy(true);
   $("form-error").hidden = true;
-  try {
+  await run(async () => {
     const created = await createTask(data);
     dialog.close();
     form.reset();
-    if (tasks === null) {
-      await load();
-    } else {
-      tasks = [...tasks, created];
-      $("notice").hidden = true;
-      connection(true);
+    $("notice").hidden = true;
+    if (tasks) {
+      tasks.push(created);
       chooseFilter("all");
+      connection("API online");
+    } else {
+      await fetchJournal();
     }
-  } catch (error) {
-    showError($("form-error"), error);
-  } finally {
-    setBusy(false);
-    if (!dialog.open) $("add").focus();
-  }
+  }, (error) => showError($("form-error"), error));
+  if (!dialog.open) $("add").focus();
 });
 
-load();
+run(fetchJournal);

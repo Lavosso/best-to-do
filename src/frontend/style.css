@@ -33,6 +33,7 @@ button:disabled, input:disabled { cursor: wait; opacity: .65; }
 .connection[data-online="true"]::before { background: var(--mint); }
 .connection[data-online="false"]::before { background: #fa9a93; }
 .refresh, .close { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border-radius: 7px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
+.refresh { width: auto; padding-inline: 9px; }
 .refresh:hover, .close:hover, .secondary:hover { background: #32303f; color: white; }
 [data-icon] svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 main { padding-block: 30px 54px; }
@@ -83,8 +84,8 @@ progress::-moz-progress-bar { background: var(--lilac); }
 .caffeine-feedback.error { color: #ffb7ae; }
 .undo { padding: 0; border: 0; background: none; color: var(--lilac); font-size: inherit; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
 .undo:hover { color: white; }
-.drinks { display: flex; gap: 10px; }
-.drink { position: relative; width: 48px; height: 48px; padding: 0; border: 1px solid #4a4657; border-radius: 10px; background: #111118; transition: transform .12s, border-color .15s, background-color .15s; }
+.drinks { display: flex; flex-wrap: wrap; gap: 10px; }
+.drink { position: relative; height: 48px; padding: 0 6px; border: 1px solid #4a4657; border-radius: 10px; background: #111118; transition: transform .12s, border-color .15s, background-color .15s; }
 .drink:hover { border-color: var(--lilac); background: #1d1a2a; transform: translateY(-1px); }
 .drink:active { transform: scale(.94); }
 .drink img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
