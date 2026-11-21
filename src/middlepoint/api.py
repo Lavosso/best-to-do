@@ -18,6 +18,10 @@ class NoweZadanie(BaseModel):
     tagi: list[str] = Field(default_factory=list)
 
 
+class ZmianyZadania(NoweZadanie):
+    tytul: str | None = None
+
+
 def sprawdz_czy_zadanie_istnieje(id_zadanie: int) -> Zadanie:
     try:
         return listaAPI.znajdz_zadanie(zadanie_id=id_zadanie)
@@ -44,7 +48,7 @@ def nowe_zadanko(dane: NoweZadanie):
         raise HTTPException(422, str(exc)) from exc
 
 @app.patch("/tasks/{id_zadanie}", response_model=Zadanie)
-def edytuj_zadanko(id_zadanie: int, do_zmiany: dict):
+def edytuj_zadanko(id_zadanie: int, do_zmiany: ZmianyZadania):
     zadanie = sprawdz_czy_zadanie_istnieje(id_zadanie)
     try:
         listaAPI.edytuj_zadanie(id_zadanie, **do_zmiany.model_dump(exclude_unset=True))
