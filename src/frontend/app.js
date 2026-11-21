@@ -55,6 +55,11 @@ for (const [type, { label, xp }] of Object.entries(drinks)) {
   button.dataset.drink = type;
   button.title = `${label} · +${xp} XP`;
   button.setAttribute("aria-label", `Dodaj napój: ${label}, +${xp} XP`);
+  const image = document.createElement("img");
+  image.src = `/ui/assets/napoje/${type}.png`;
+  image.alt = "";
+  image.draggable = false;
+  button.append(image);
   button.addEventListener("click", () => drink(type, button));
   $("drinks").append(button);
   const row = document.createElement("div");

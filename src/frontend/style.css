@@ -26,7 +26,7 @@ button:disabled, input:disabled { cursor: wait; opacity: .65; }
 .bar-inner { height: 72px; justify-content: space-between; }
 .brand { font-size: 1.45rem; font-weight: 800; letter-spacing: -.065em; }
 .brand span { color: var(--lilac); }
-.brand img { width: 34px; height: 34px; margin-right: 11px; }
+.brand img { width: 32px; height: 32px; margin-right: 12px; image-rendering: pixelated; }
 .api-tools { gap: 12px; }
 .connection { gap: 8px; color: var(--muted); font: .8125rem var(--mono); }
 .connection::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }

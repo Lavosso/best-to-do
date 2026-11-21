@@ -28,6 +28,7 @@ API: `GET /caffeine`, `POST /caffeine` z treścią `{"rodzaj": "kawa"}` oraz `DE
 
 - `src/frontend/progress.js` określa nagrody za priorytety i napoje, próg nowego poziomu oraz parametry miernika kofeiny (okres półtrwania, progi kolorów). Panel oblicza XP na podstawie aktualnie ukończonych zadań i wypitych napojów. Cofnięcie ukończenia odejmuje nagrodę.
 - `src/backend/kofeina.py` określa ilość kofeiny (mg) w każdym napoju.
+- `src/frontend/assets/napoje/` zawiera grafiki przycisków. Nazwa pliku odpowiada kluczowi napoju z `progress.js`, np. `monster.png`.
 - `src/frontend/api.js` odpowiada za odczyt i zapis zadań oraz kofeiny. `app.js` łączy dane z widokiem, a `style.css` definiuje wygląd panelu.
 
 Obecny backend przechowuje zadania i kofeinę w pamięci procesu. Po restarcie serwera lista zadań, licznik kofeiny i wynik XP zaczynają się od zera.
