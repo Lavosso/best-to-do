@@ -8,11 +8,11 @@ export const xpPerLevel = 100;
 
 export function remainingMg(mg, updatedAt, now = Date.now()) {
   const hours = Math.max(0, now - updatedAt) / 3_600_000;
-  return mg * 0.5 ** (hours / 4);
+  return (mg<50 && hours>1) ? 0 : mg * 0.5 ** (hours / 4);
 }
 
 export function xpMultiplier(mg) {
-  return mg === 0 ? 1 : Math.min(mg / 100, 4);
+  return Math.max(1, Math.min(mg / 100, 4));
 }
 
 export function playerStats(tasks) {

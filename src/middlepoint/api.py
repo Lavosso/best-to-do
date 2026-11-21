@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool
 SCIEZKA_ZADAN = Path(__file__).resolve().parents[2] / "zadania_robocze.json"
 listaAPI = ListaZadan()
 blokada_zapisu = Lock()
+blokada_zapisu = Lock()
 
 @asynccontextmanager
 async def uruchomienie(_app: FastAPI):
@@ -64,7 +65,7 @@ class NoweZadanie(BaseModel):
     priorytet: str = "sredni"
     wykonane: StrictBool = False
     tagi: list[str] = Field(default_factory=list)
-    mnoznik_xp: float = Field(default=1, strict=True, ge=0, le=4)
+    mnoznik_xp: float = Field(default=1, strict=True, ge=1, le=4)
 
 
 class ZmianyZadania(NoweZadanie):

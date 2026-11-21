@@ -22,8 +22,8 @@ def sprawdz_zadanie(zadanie: Zadanie) -> None:
     prawidlowy_priotytet(zadanie.priorytet)
     prawidlowy_status(zadanie.wykonane)
     prawidlowe_tagi(zadanie.tagi)
-    if type(zadanie.mnoznik_xp) not in (int, float) or not 0 <= zadanie.mnoznik_xp <= 4:
-        raise ValueError("Mnożnik XP musi być liczbą od 0 do 4")
+    if type(zadanie.mnoznik_xp) not in (int, float) or not 1 <= zadanie.mnoznik_xp <= 4:
+        raise ValueError("Mnożnik XP musi być liczbą od 1 do 4")
     if not zadanie.wykonane and zadanie.mnoznik_xp != 1:
         raise ValueError("Tylko ukończone zadanie może mieć zapisany mnożnik XP")
 

@@ -27,6 +27,10 @@ def wczytaj_zadania(sciezka: str | Path) -> list[Zadanie]:
             raise ValueError(f"Niepoprawny zestaw pól w zadaniu nr {numer}")
 
         pola = wpis.copy()
+        # We wcześniejszych zapisach ukończona misja mogła mieć mnożnik poniżej 1.
+        mnoznik = pola.get("mnoznik_xp", 1)
+        if pola["wykonane"] is True and type(mnoznik) in (int, float) and 0 <= mnoznik < 1:
+            pola["mnoznik_xp"] = 1
         termin = pola["termin"]
 
         if termin is not None:
