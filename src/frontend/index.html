@@ -25,25 +25,41 @@
         <div class="experience-label"><span>Postęp poziomu</span><strong id="level-xp">— XP</strong></div>
         <progress id="level-bar" value="0" max="100" aria-label="Postęp poziomu"></progress>
       </div>
+      <div class="experience caffeine" id="caffeine" data-level="normal">
+        <div class="experience-label"><span>Stężenie kofeiny</span><strong id="caffeine-mg">— mg</strong></div>
+        <div class="caffeine-bar" id="caffeine-bar" role="meter" aria-label="Stężenie kofeiny" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0"><span id="caffeine-fill"></span></div>
+        <p class="caffeine-note" id="caffeine-note">Spada o połowę co 4 h</p>
+      </div>
     </section>
 
     <div class="dashboard">
-      <section class="board" aria-labelledby="board-title">
-        <div class="board-header"><h2 id="board-title">Tablica misji</h2>
-          <button id="add" class="primary" type="button"><span aria-hidden="true">+</span> Nowa misja</button>
-        </div>
-        <div class="filters" role="group" aria-label="Filtruj misje">
-          <button data-filter="all" aria-pressed="true">Wszystkie</button>
-          <button data-filter="active" aria-pressed="false">Aktywne</button>
-          <button data-filter="done" aria-pressed="false">Ukończone</button>
-        </div>
-        <div id="notice" role="alert" hidden></div>
-        <ul id="tasks" aria-label="Misje"></ul>
-        <div class="empty" id="empty" role="status">
-          <img src="/ui/assets/chest.png" alt="" width="104" height="72">
-          <h3 id="empty-title">Pobieranie misji…</h3><p id="empty-detail"></p>
-        </div>
-      </section>
+      <div class="main-column">
+        <section class="caffeine-box" aria-labelledby="caffeine-title">
+          <div class="caffeine-info">
+            <h2 id="caffeine-title"><span class="icon" data-icon="cup"></span>Kofeina</h2>
+            <p class="caffeine-feedback" id="caffeine-feedback-line"><span id="caffeine-feedback" role="status">Kliknij wypity napój</span>
+              <button type="button" class="undo" id="caffeine-undo" hidden>Cofnij</button></p>
+          </div>
+          <div class="drinks" id="drinks" role="group" aria-label="Dodaj wypity napój"></div>
+        </section>
+
+        <section class="board" aria-labelledby="board-title">
+          <div class="board-header"><h2 id="board-title">Tablica misji</h2>
+            <button id="add" class="primary" type="button"><span aria-hidden="true">+</span> Nowa misja</button>
+          </div>
+          <div class="filters" role="group" aria-label="Filtruj misje">
+            <button data-filter="all" aria-pressed="true">Wszystkie</button>
+            <button data-filter="active" aria-pressed="false">Aktywne</button>
+            <button data-filter="done" aria-pressed="false">Ukończone</button>
+          </div>
+          <div id="notice" role="alert" hidden></div>
+          <ul id="tasks" aria-label="Misje"></ul>
+          <div class="empty" id="empty" role="status">
+            <img src="/ui/assets/chest.png" alt="" width="104" height="72">
+            <h3 id="empty-title">Pobieranie misji…</h3><p id="empty-detail"></p>
+          </div>
+        </section>
+      </div>
 
       <aside>
         <section class="side-card"><h2><span class="icon" data-icon="chart"></span>Statystyki gracza</h2>
@@ -51,11 +67,16 @@
             <div><dt><span class="tile gold" data-icon="bolt"></span>Łącznie XP</dt><dd id="xp">—</dd></div>
             <div><dt><span class="tile mint" data-icon="check"></span>Ukończone misje</dt><dd id="done">—</dd></div>
             <div><dt><span class="tile purple" data-icon="flag"></span>Aktywne misje</dt><dd id="active">—</dd></div>
+            <div><dt><span class="tile roast" data-icon="cup"></span>Wypite mg kofeiny</dt><dd id="caffeine-total">—</dd></div>
           </dl>
         </section>
         <section class="side-card rewards"><h2><span class="icon" data-icon="gem"></span>Nagrody za misje</h2>
           <p>XP za ukończenie misji według priorytetu.</p>
           <dl id="rewards"></dl>
+        </section>
+        <section class="side-card rewards"><h2><span class="icon" data-icon="cup"></span>Boost Kofeinowy</h2>
+          <p>XP za każdy wypity napój.</p>
+          <dl id="drink-rewards"></dl>
         </section>
       </aside>
     </div>

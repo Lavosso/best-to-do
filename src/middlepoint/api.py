@@ -1,6 +1,8 @@
 from datetime import date
 from pathlib import Path
 
+from backend.kofeina import DziennikKofeiny
+from backend.modele import Kofeina
 from backend.zadania import ListaZadan, Zadanie
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse
@@ -9,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool
 
 app = FastAPI(title="Task Control API")
 listaAPI = ListaZadan()
+dziennikKofeiny = DziennikKofeiny()
 frontend_dir = Path(__file__).resolve().parents[1] / "frontend"
 app.mount("/ui", StaticFiles(directory=frontend_dir), name="frontend")
 
@@ -31,6 +34,12 @@ class NoweZadanie(BaseModel):
 
 class ZmianyZadania(NoweZadanie):
     tytul: str | None = None
+
+
+class NowaKofeina(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    rodzaj: str
 
 
 def sprawdz_czy_zadanie_istnieje(id_zadanie: int) -> Zadanie:
@@ -73,4 +82,23 @@ def usun_zadanko(id_zadanie: int):
         listaAPI.usun_zadanie(id_zadanie)
     except LookupError as exc:
         raise HTTPException(404, "Zadanie nie istnieje") from exc
+    return Response(status_code=204)
+
+@app.get("/caffeine", response_model=list[Kofeina])
+def lista_kofeiny():
+    return dziennikKofeiny.pobierz_wpisy()
+
+@app.post("/caffeine", response_model=Kofeina, status_code=201)
+def nowa_kofeina(dane: NowaKofeina):
+    try:
+        return dziennikKofeiny.dodaj_napoj(dane.rodzaj)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+@app.delete("/caffeine/{id_wpisu}", status_code=204)
+def usun_kofeine(id_wpisu: int):
+    try:
+        dziennikKofeiny.usun_wpis(id_wpisu)
+    except LookupError as exc:
+        raise HTTPException(404, "Wpis kofeiny nie istnieje") from exc
     return Response(status_code=204)
