@@ -1,11 +1,17 @@
-import { createTask, getTasks, setCompleted } from "./api.js";
-import { playerStats, priorities, xpPerLevel } from "./progress.js";
+import { addCaffeine, createTask, getCaffeine, getTasks, removeCaffeine, setCompleted } from "./api.js";
+import { caffeineInBody, caffeineMeter, drinks, playerStats, priorities, xpPerLevel } from "./progress.js";
 
 const $ = (id) => document.getElementById(id);
 const form = $("task-form");
 const dialog = $("editor");
 const filters = document.querySelectorAll("[data-filter]");
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const feedbackHint = "Kliknij wypity napój";
+const caffeineWarnings = { high: "Wysokie stężenie", "very-high": "Bardzo wysokie stężenie!" };
 let tasks = null;
+let intake = null;
+let lastDrink = null;
+let feedbackTimer;
 let filter = "all";
 let busy = false;
 
@@ -13,6 +19,7 @@ const iconPaths = {
   chart: "M4 19h16 M6 15v-4 M12 15V5 M18 15V8",
   bolt: "m13 2-9 12h7l-1 8 10-13h-8z",
   check: "m5 12 4 4 10-10",
+  cup: "M17 8h1a4 4 0 0 1 0 8h-1 M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z M6 2v3 M10 2v3 M14 2v3",
   flag: "M5 21V4c5-4 9 4 15 0v10c-6 4-10-4-15 0",
   gem: "m3 9 4-5h10l4 5-9 12z M3 9h18 M9 9l3 12 3-12",
   refresh: "M20 7v5h-5 M4 17v-5h5 M6 8a7 7 0 0 1 12-2l2 4 M4 14l2 4a7 7 0 0 0 12-2",
@@ -41,6 +48,22 @@ for (const [value, { label, xp }] of Object.entries(priorities)) {
   $("rewards").append(row);
 }
 
+for (const [type, { label, xp }] of Object.entries(drinks)) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "drink";
+  button.dataset.drink = type;
+  button.title = `${label} · +${xp} XP`;
+  button.setAttribute("aria-label", `Dodaj napój: ${label}, +${xp} XP`);
+  button.addEventListener("click", () => drink(type, button));
+  $("drinks").append(button);
+  const row = document.createElement("div");
+  row.append(element("dt", "drink-reward", label), element("dd", "", `+${xp} XP`));
+  $("drink-rewards").append(row);
+}
+$("caffeine-bar").style.setProperty("--segments", caffeineMeter.maxMg / caffeineMeter.stepMg);
+$("caffeine-bar").setAttribute("aria-valuemax", caffeineMeter.maxMg);
+
 function renderTask(task) {
   const item = document.createElement("li");
   const toggle = document.createElement("input");
@@ -68,9 +91,21 @@ function renderTask(task) {
   return item;
 }
 
+function renderCaffeine() {
+  if (intake === null) return;
+  const { mg, level } = caffeineInBody(intake);
+  const warning = caffeineWarnings[level];
+  $("caffeine").dataset.level = level;
+  $("caffeine-mg").textContent = `${mg.toLocaleString("pl-PL")} mg`;
+  $("caffeine-fill").style.width = `${Math.min(100, (mg / caffeineMeter.maxMg) * 100)}%`;
+  $("caffeine-bar").setAttribute("aria-valuenow", Math.min(mg, caffeineMeter.maxMg));
+  $("caffeine-bar").setAttribute("aria-valuetext", warning ? `${mg} mg, ${warning.toLowerCase()}` : `${mg} mg`);
+  $("caffeine-note").textContent = warning ?? `Spada o połowę co ${caffeineMeter.halfLifeHours} h`;
+}
+
 function render() {
-  if (tasks === null) return;
-  const stats = playerStats(tasks);
+  if (tasks === null || intake === null) return;
+  const stats = playerStats(tasks, intake);
   $("level").textContent = String(stats.level).padStart(2, "0");
   $("level-xp").textContent = `${stats.levelXp} / ${xpPerLevel} XP`;
   $("level-bar").max = xpPerLevel;
@@ -78,6 +113,8 @@ function render() {
   $("xp").textContent = stats.xp;
   $("done").textContent = stats.completed;
   $("active").textContent = stats.active;
+  $("caffeine-total").textContent = stats.caffeineMg.toLocaleString("pl-PL");
+  renderCaffeine();
 
   const visible = tasks.filter((task) => filter === "all" || task.wykonane === (filter === "done"));
   $("tasks").replaceChildren(...visible.map(renderTask));
@@ -99,7 +136,7 @@ for (const button of filters) button.addEventListener("click", () => chooseFilte
 
 function setBusy(value) {
   busy = value;
-  for (const node of document.querySelectorAll("#refresh, #add, #tasks input, #task-form button")) {
+  for (const node of document.querySelectorAll("#refresh, #add, #tasks input, #task-form button, #drinks button, #caffeine-undo")) {
     node.disabled = value;
   }
 }
@@ -125,7 +162,7 @@ async function load() {
   setBusy(true);
   $("notice").hidden = true;
   try {
-    tasks = await getTasks();
+    [tasks, intake] = await Promise.all([getTasks(), getCaffeine()]);
     connection(true);
     render();
   } catch (error) {
@@ -154,6 +191,82 @@ async function toggleTask(task) {
     (document.querySelector(`input[data-id="${task.id}"]`) ?? document.querySelector('[data-filter][aria-pressed="true"]')).focus();
   }
 }
+
+function caffeineFeedback(text, { undo = false, error = false, resetAfter = 0 } = {}) {
+  clearTimeout(feedbackTimer);
+  $("caffeine-feedback").textContent = text;
+  $("caffeine-feedback-line").classList.toggle("error", error);
+  $("caffeine-undo").hidden = !undo;
+  if (resetAfter) feedbackTimer = setTimeout(resetFeedback, resetAfter);
+}
+
+function resetFeedback() {
+  const undoFocused = document.activeElement === $("caffeine-undo");
+  const type = lastDrink?.rodzaj;
+  lastDrink = null;
+  caffeineFeedback(feedbackHint);
+  if (undoFocused && type) document.querySelector(`[data-drink="${type}"]`).focus();
+}
+
+function caffeineError(error) {
+  lastDrink = null;
+  caffeineFeedback("", { error: true });
+  showError($("caffeine-feedback"), error);
+}
+
+function popXp(button, xp) {
+  if (reduceMotion.matches) return;
+  const pop = element("span", "xp-pop", `+${xp} XP`);
+  pop.setAttribute("aria-hidden", "true");
+  pop.addEventListener("animationend", () => pop.remove());
+  button.append(pop);
+}
+
+async function drink(type, button) {
+  if (busy) return;
+  setBusy(true);
+  try {
+    const entry = await addCaffeine(type);
+    connection(true);
+    lastDrink = entry;
+    const { label, xp } = drinks[type];
+    caffeineFeedback(`${label}: +${entry.mg} mg, +${xp} XP`, { undo: true, resetAfter: 8000 });
+    popXp(button, xp);
+    if (intake === null) {
+      await load();
+    } else {
+      intake = [...intake, entry];
+    }
+  } catch (error) {
+    caffeineError(error);
+  } finally {
+    setBusy(false);
+    render();
+    button.focus();
+  }
+}
+
+$("caffeine-undo").addEventListener("click", async () => {
+  if (busy || !lastDrink) return;
+  const entry = lastDrink;
+  setBusy(true);
+  try {
+    await removeCaffeine(entry.id);
+    intake = intake?.filter((item) => item.id !== entry.id) ?? null;
+    connection(true);
+    lastDrink = null;
+    caffeineFeedback(`Cofnięto: ${drinks[entry.rodzaj].label}`, { resetAfter: 4000 });
+  } catch (error) {
+    caffeineError(error);
+  } finally {
+    setBusy(false);
+    render();
+    document.querySelector(`[data-drink="${entry.rodzaj}"]`).focus();
+  }
+});
+
+setInterval(renderCaffeine, 60_000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) renderCaffeine(); });
 
 $("refresh").addEventListener("click", load);
 $("add").addEventListener("click", () => {
