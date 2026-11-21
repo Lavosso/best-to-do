@@ -31,3 +31,4 @@ API: `GET /caffeine`, `POST /caffeine` z treścią `{"rodzaj": "kawa"}` oraz `DE
 - `src/frontend/api.js` odpowiada za odczyt i zapis zadań oraz kofeiny. `app.js` łączy dane z widokiem, a `style.css` definiuje wygląd panelu.
 
 Obecny backend przechowuje zadania i kofeinę w pamięci procesu. Po restarcie serwera lista zadań, licznik kofeiny i wynik XP zaczynają się od zera.
+Backend wczytuje zadania z pliku `zadania_robocze.json` w głównym katalogu projektu. Jeśli pliku jeszcze nie ma, panel startuje z pustą listą, a plik pojawia się po pierwszej zapisanej zmianie. Po restarcie panel odtwarza XP na podstawie wczytanych zadań. Uruchamiaj aplikację z jednym procesem serwera.
