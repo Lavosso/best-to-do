@@ -1,11 +1,22 @@
 from datetime import date
+from pathlib import Path
 
 from backend.zadania import ListaZadan, Zadanie
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, StrictBool
 
 app = FastAPI(title="Task Control API")
 listaAPI = ListaZadan()
+frontend_dir = Path(__file__).resolve().parents[1] / "frontend"
+app.mount("/ui", StaticFiles(directory=frontend_dir), name="frontend")
+
+
+@app.get("/", include_in_schema=False)
+def panel_gracza():
+    return FileResponse(frontend_dir / "index.html")
+
 
 class NoweZadanie(BaseModel):
     model_config = ConfigDict(extra="forbid")
