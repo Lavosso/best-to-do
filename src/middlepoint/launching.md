@@ -1,6 +1,6 @@
-Aby uruchomić:
+Uruchom aplikację z głównego katalogu projektu.
 
-`.venv/bin/python -m uvicorn src.middlepoint.api:app --reload --app-dir src --host 127.0.0.1`
+`./launch.sh`
 
 Aby dodac zadanie z konsoli:
 

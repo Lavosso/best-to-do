@@ -6,8 +6,10 @@ async function request(url, method = "GET", data) {
   }
   const response = await fetch(url, options);
   if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error(typeof body.detail === "string" ? body.detail : `Błąd API (${response.status})`);
+    const body = await response.json().catch(() => null);
+    const detail = body?.detail;
+    const message = Array.isArray(detail) ? detail[0]?.msg : detail;
+    throw new Error(typeof message === "string" && message ? message : `Błąd API (${response.status})`);
   }
   return response.status === 204 ? null : response.json();
 }
